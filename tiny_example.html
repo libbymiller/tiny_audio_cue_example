@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+</head>
+<body>
+
+<script type="text/javascript" src="cues.json"></script>
+<script type="text/javascript">
+
+var requestAnimationFrame = window.requestAnimationFrame;
+
+var count = 0;
+var complete = false;
+var cues;
+
+// https://stackoverflow.com/questions/37149520/html5-audio-timeupdate-precision
+function trackCurrentTime() {
+  // `this` : `audio`
+  //console.log(this.currentTime);
+  var cue = cues[count];
+  if (cue && this.currentTime > cue.start - 0.5) { // bit arbitrary but seems to work
+    console.log("got cue "+cue.id);
+    document.getElementById("cue").innerHTML = "got cue "+cue.id+" start "+cue.start;
+    count = count + 1;
+  } 
+
+  if(complete==false){  
+    requestAnimationFrame(trackCurrentTime.bind(this))
+  }
+}
+
+
+window.onload = function(){
+      var audio = document.getElementById("audio");
+      var v = "sound.mp3";
+      audio.src = v;
+      audio.onpause = function(e) {
+        console.log("stopped!");
+        complete = true;
+        console.log(e.target.currentTime)
+      }
+      audio.load();
+      audio.play();
+      trackCurrentTime.call(audio);
+
+};
+
+
+</script>
+<audio id="audio" controls ></audio>
+
+<div>
+<span id="cue"></span>
+</div>
+
+</body>
+</html>
